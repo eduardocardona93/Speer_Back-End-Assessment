@@ -1,18 +1,17 @@
 const express = require('express');
 //initializations
 const app = express();
-const passport = require('passport');
 require('./database');
 
 
 // Settings
 app.set('port', process.env.PORT || 3300);
 // Middlewares
-app.use(express.urlencoded({ extended: false }));
-
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Requests Handler
-require('./requests/handler') (app)
+require('./requests/handler') (app);
 
 // app.post();
 // app.delete();

@@ -9,7 +9,17 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.methods.generateHash = (password) => {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+    var resultHash = null;
+     bcrypt.hashSync(password, 
+        bcrypt.genSaltSync(8,   
+            (errSalt , salt) => {
+
+            }), 
+        (err, hash) => {
+            resultHash = hash;
+        }
+    );
+  return resultHash
 }
 
 userSchema.methods.validatePass = (password) => {
