@@ -8,34 +8,35 @@ module.exports = (app) => {
     app.post('/signup', (req,res) => {
         const userEmail = req.body.email;
         const userPass = req.body.password;
+        var errorsSaving = null;
         if(!userEmail){
-            res.status(500).send({errorMsg : "No Email sent" , status: 500});
+            errorsSaving = {errorMsg : "No Email sent" , status: 500};
         }else if(!userPass){
-            res.status(500).send({errorMsg : "No Password Sent" , status: 500});
+            errorsSaving = {errorMsg : "No Password Sent" , status: 500};
         }else{
             User.findOne({'local.email': userEmail}, (err , user)=>{
                 if (err) {
-                    res.status(500).send({error : err , status: 500});
+                    errorsSaving = {error : err , status: 500};
                 }else if(user) {
-                    res.status(500).send({errorMsg : "User email already registered" , status: 500});
+                    errorsSaving = {errorMsg : "User email already registered" , status: 500};
                 }else{
                     var newUser = new User();
                     newUser.local.email = userEmail;
-                    newUser.local.password = newUser.generateHash(userPass);
+                    newUser.local.password = userPass;
                     if(!newUser.local.password){
-                        res.status(500).send({errorMsg : "Error saving the password, contact the admin" , status: 500});
-                    }
+                        errorsSaving = {errorMsg : "Error saving the password, contact the admin" , status: 500};
+                    }                    
                     newUser.save((errorSave) => {
-                        res.status(500).send({error : errorSaveerr , status: 500});
-                        return null;
-                    })
-                    res.send('OK')
+                        errorsSaving = {error : errorSave , status: 500};
+                    });                    
+                }
+                if(!errorsSaving){
+                    res.send({userId : newUser._id, status: 200});
+                }else{
+                    res.status(500).send(errorsSaving);
                 }
             })
         }
-    
-    
-        
     });
     
     app.post('/login', (req,res) => {
@@ -51,16 +52,23 @@ module.exports = (app) => {
                     res.status(500).send({error : err , status: 500});
                 }else if(!user) {
                     res.status(500).send({errorMsg : "User not found" , status: 500});
-                }if(!user.validatePass(password)) {
+                }else if(!user.validatePass(userPass)) {
                     res.status(500).send({errorMsg : "Wrong password" , status: 500});
                 }else{
-        
-                    res.send('OK')
+                    req.session.user_id = user._id;
+                    res.send({userId : user._id})
                 }
             })
         }
     });
     
-    
 
+    app.post('/user/chat', (req,res) => {});
+
+    app.post('/tweet/create', (req,res) => {});
+    app.post('/tweet/update', (req,res) => {});
+    app.post('/tweet/delete', (req,res) => {});
+    app.post('/tweet/create', (req,res) => {});
+    app.post('/tweet/likeChange', (req,res) => {});
+    app.post('/tweet/retweet', (req,res) => {});
 };
