@@ -1,5 +1,8 @@
 const express = require('express');
 const session = require('express-session');
+var multer = require('multer');
+var upload = multer();
+
 //initializations
 const app = express();
 require('./database');
@@ -15,6 +18,7 @@ app.use(session({
     resave : true,
     saveUninitialized: true
 }))
+app.use(upload.array());
 
 // Requests Handler
 require('./requests/handler') (app);
@@ -26,3 +30,5 @@ require('./requests/handler') (app);
 app.listen(app.get('port') , () => {
     console.log("Server on port ",app.get('port'));
 });
+
+module.exports = app;
