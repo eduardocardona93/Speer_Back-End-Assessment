@@ -29,5 +29,5 @@ require('./requests/handler') (app);
 app.listen(app.get('port') , () => {
     console.log("Server on port ",app.get('port'));
 });
-
+// exports for test usage
 module.exports = app;
