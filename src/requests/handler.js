@@ -65,6 +65,8 @@ module.exports = (app) => {
     
     // ************************* PART TWO *************************
     // ---------- TWEETS ----------
+
+    // CREATE
     app.post('/tweet', (req,res) => {
         const authorTw = req.body.author;
         const previousTweetTw = req.body.previousTweet;
@@ -82,7 +84,7 @@ module.exports = (app) => {
             User.findOne({'_id': authorTw}, (err , author)=>{
                 
                 if(!author){
-                    res.status(500).json({"errorMsg" : "The author could not be found" , status: 404});
+                    res.status(404).json({"errorMsg" : "The author could not be found" , status: 404});
                 }else{
                     var newTweet = new Tweet();
                     newTweet.author = authorTw;
@@ -111,12 +113,14 @@ module.exports = (app) => {
         
 
     });
-    app.post('/tweet/:tweetId', (req,res) => {
+    // UPDATE
+    app.post('/tweet/update/', (req,res) => {
+        res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
+    });
+    app.post('/tweet/update/:tweetId', (req,res) => {
         const tweetId = req.params.tweetId;
         const textTw = req.body.text;
-        if(!tweetId){
-            res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
-        }else if(!textTw){
+        if(!textTw){
             res.status(500).json({"errorMsg" : "No Text sent in the request" , status: 500});
         }else if(textTw.length > 280){
             res.status(500).json({"errorMsg" : "The text exceeds the 280 character limit" , status: 500});
@@ -124,7 +128,7 @@ module.exports = (app) => {
             Tweet.findOne({'_id': tweetId}, (err , tweet)=>{
                 
                 if(!tweet){
-                    res.status(500).json({"errorMsg" : "The tweet could not be found" , status: 404});
+                    res.status(404).json({"errorMsg" : "The tweet could not be found" , status: 404});
                 }else{
                     tweet.text = textTw;                  
                     tweet.isEdited = true;                  
@@ -139,40 +143,40 @@ module.exports = (app) => {
             }); 
         }
     });
+    // READ
+    app.get('/tweet/', (req,res) => {
+        res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
+    })
     app.get('/tweet/:tweetId', (req,res) => {
         const tweetId = req.params.tweetId;
-        if(!tweetId){
-            res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
-        }else{
-            Tweet.findOne({'_id': tweetId}, (err , tweet)=>{
-                if(!tweet) {
-                    res.status(500).json({"errorMsg" : "The tweet could not be found" , status: 404});
-                }else {
-                    res.status(200).json({"tweet": tweet, "status": 200});  
-                }
-            }); 
-        } 
+        Tweet.findOne({'_id': tweetId}, (err , tweet)=>{
+            if(!tweet) {
+                res.status(404).json({"errorMsg" : "The tweet could not be found" , status: 404});
+            }else {
+                res.status(200).json({"tweet": tweet, "status": 200});  
+            }
+        }); 
+    });
+    // DELETE
+    app.delete('/tweet/', (req,res) => {
+        res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
     });
     app.delete('/tweet/:tweetId', (req,res) => {
         const tweetId = req.params.tweetId;
-        if(!tweetId){
-            res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
-        }else{
-            Tweet.findOne({'_id': tweetId}, (err , tweet)=>{
-                if(!tweet) {
-                    res.status(500).json({"errorMsg" : "The tweet could not be found" , status: 404});
-                }else {
-                    tweet.visible = false;                  
-                    tweet.save( (errorSaveTw) => {
-                        if(errorSaveTw) {
-                            res.status(500).json(errorSaveTw);
-                        }else{
-                            res.status(200).json({ "message": "Tweet Deleted Successfully", "status": 200});
-                        }
-                    });        
-                }
-            }); 
-        } 
+        Tweet.findOne({'_id': tweetId}, (err , tweet)=>{
+            if(!tweet) {
+                res.status(500).json({"errorMsg" : "The tweet could not be found" , status: 404});
+            }else {
+                tweet.visible = false;                  
+                tweet.save( (errorSaveTw) => {
+                    if(errorSaveTw) {
+                        res.status(500).json(errorSaveTw);
+                    }else{
+                        res.status(200).json({ "message": "Tweet Deleted Successfully", "status": 200});
+                    }
+                });        
+            }
+        }); 
     });
 
     // ---------- CHAT ----------
@@ -265,41 +269,20 @@ module.exports = (app) => {
             }); 
         }
     })
+    app.get('/chat/', (req,res) => {
+        res.status(500).json({"errorMsg" : "No Chat Id sent in the request" , status: 500});
+    })
     app.get('/chat/:chatId', (req,res) => {
         const chatId = req.params.chatId;
-        if(!chatId){
-            res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
-        }else{
-            Chat.findOne({'_id': chatId}, (err , chat) => {
-                if(!chat) {
-                    res.status(500).json({"errorMsg" : "The chat could not be found" , status: 404});
-                }else {
-                    res.status(200).json({"chat": chat, "status": 200});  
-                }
-            }); 
-        }
+        Chat.findOne({'_id': chatId}, (err , chat) => {
+            if(!chat) {
+                res.status(500).json({"errorMsg" : "The chat could not be found" , status: 404});
+            }else {
+                res.status(200).json({"chat": chat, "status": 200});  
+            }
+        }); 
     })
-    app.delete('/message/:messageId', (req,res) => {
-        const messageId = req.params.messageId;
-        if(!messageId){
-            res.status(500).json({"errorMsg" : "No Message Id sent in the request" , status: 500});
-        }else{
-            Tweet.findOne({'_id': tweetId}, (err , tweet)=>{
-                if(!tweet) {
-                    res.status(500).json({"errorMsg" : "The message could not be found" , status: 404});
-                }else {
-                    tweet.visible = false;                  
-                    tweet.save( (errorSaveTw) => {
-                        if(errorSaveTw) {
-                            res.status(500).json(errorSaveTw);
-                        }else{
-                            res.status(200).json({ "message": "Tweet Deleted Successfully", "status": 200});
-                        }
-                    });        
-                }
-            }); 
-        } 
-    });
+
 
 
     // ************************* PART THREE *************************

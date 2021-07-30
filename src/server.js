@@ -22,8 +22,7 @@ app.use(upload.array());
 
 // Requests Handler
 require('./requests/handler') (app);
-// app.post();
-// app.delete();
+
 
 
 // Initializing

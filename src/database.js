@@ -7,15 +7,25 @@ mongoose.connect('mongodb://localhost/speer_db', {
     useUnifiedTopology: true
 }).then(db => 
     {
-        var userEmail = "admin-speer@gmail.com";
-        User.findOne({'email': userEmail}, (err, user)=>{
+        console.log('DB is connected');
+
+        var adminEmail = "admin-speer@gmail.com";
+        User.findOne({'email': adminEmail}, (err, user)=>{
             if (!err && ! user) {
                 var newUser = new User();
-                newUser.email = userEmail;
+                newUser.email = adminEmail;
                 newUser.password = "YWRtaW4tc3BlZXI=";
                 newUser.save((errorSave) => {});
             }
-            console.log('DB is connected');
+        });
+        var qaEmail = "qa-speer@gmail.com";
+        User.findOne({'email': qaEmail}, (err, user)=>{
+            if (!err && ! user) {
+                var newUser = new User();
+                newUser.email = qaEmail;
+                newUser.password = "YWRtaW4tc3BlZXI=";
+                newUser.save((errorSave) => {});
+            }
         });
     }
     )
