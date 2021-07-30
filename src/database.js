@@ -8,11 +8,11 @@ mongoose.connect('mongodb://localhost/speer_db', {
 }).then(db => 
     {
         var userEmail = "admin-speer@gmail.com";
-        User.findOne({'local.email': userEmail}, (err, user)=>{
+        User.findOne({'email': userEmail}, (err, user)=>{
             if (!err && ! user) {
                 var newUser = new User();
-                newUser.local.email = userEmail;
-                newUser.local.password = "YWRtaW4tc3BlZXI=";                
+                newUser.email = userEmail;
+                newUser.password = "YWRtaW4tc3BlZXI=";
                 newUser.save((errorSave) => {});
             }
             console.log('DB is connected');
