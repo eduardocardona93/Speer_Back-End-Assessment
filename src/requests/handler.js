@@ -283,14 +283,95 @@ module.exports = (app) => {
         }); 
     })
 
-
-
     // ************************* PART THREE *************************
-    app.post('/likeChange/:tweetId', (req,res) => {
+    app.post('/likeChange/', (req,res) => {
+        const tweetId = req.body.tweetId;
+        const senderId = req.body.senderId;
+        if(!tweetId){
+            res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
+        }else if(!senderId){
+            res.status(500).json({"errorMsg" : "No Sender Id sent in the request" , status: 500});
+        }else{
+            Tweet.findOne({'_id': tweetId}, (err , tweet) => {
+                if(!tweet) {
+                    res.status(500).json({"errorMsg" : "The tweet could not be found" , status: 404});
+                }else {
+                    User.findOne({'_id': senderId}, (err, user) => {
+                        if(!user) {
+                            res.status(500).json({"errorMsg" : "The user could not be found" , status: 404});
+                        }else {
+                            var indexUserLikedTweets = user.likedTweets.indexOf(tweetId);
+                            if(indexUserLikedTweets > -1){ // to unLike
+                                tweet.likes = tweet.likes - 1;
+                                user.likedTweets.splice(indexUserLikedTweets,1)
+                            }else{ // to like
+                                tweet.likes = tweet.likes + 1;
+                                user.likedTweets.push(tweetId);
+                            }
+
+                            tweet.save((errorSaveTweet) => {
+                                if (errorSaveTweet) {
+                                    res.status(500).json(errorSaveTweet);
+                                } else {
+                                    user.save((errorSaveUser) => {
+                                        if (errorSaveUser) {
+                                            res.status(500).json(errorSaveUser);
+                                        } else {
+                                            res.status(200).json({"chat": tweet, "message": "Like/UnLike Successfully submitted ", "status": 200});  
+                                        }
+                                    })
+                                }
+                            })
+                        };
+                    })
+                }
+            }); 
+        }
 
     });
-    app.post('/retweetChange/:tweetId', (req,res) => {
+    app.post('/retweetChange/', (req,res) => {
+        const tweetId = req.body.tweetId;
+        const senderId = req.body.senderId;
+        if(!tweetId){
+            res.status(500).json({"errorMsg" : "No Tweet Id sent in the request" , status: 500});
+        }else if(!senderId){
+            res.status(500).json({"errorMsg" : "No Sender Id sent in the request" , status: 500});
+        }else{
+            Tweet.findOne({'_id': tweetId}, (err , tweet) => {
+                if(!tweet) {
+                    res.status(500).json({"errorMsg" : "The tweet could not be found" , status: 404});
+                }else {
+                    User.findOne({'_id': senderId}, (err, user) => {
+                        if(!user) {
+                            res.status(500).json({"errorMsg" : "The user could not be found" , status: 404});
+                        }else {
+                            var indexUserRTTweets = user.rtTweets.indexOf(tweetId);
+                            if(indexUserRTTweets > -1){ // to unLike
+                                tweet.retweets = tweet.retweets - 1;
+                                user.rtTweets.splice(tweetId,1)
+                            }else{ // to like
+                                tweet.retweets = tweet.retweets + 1;
+                                user.rtTweets.push(tweetId);
+                            }
 
+                            tweet.save((errorSaveTweet) => {
+                                if (errorSaveTweet) {
+                                    res.status(500).json(errorSaveTweet);
+                                } else {
+                                    user.save((errorSaveUser) => {
+                                        if (errorSaveUser) {
+                                            res.status(500).json(errorSaveUser);
+                                        } else {
+                                            res.status(200).json({"chat": tweet, "message": "RT/unRT Successfully submitted ", "status": 200});  
+                                        }
+                                    })
+                                }
+                            })
+                        };
+                    })
+                }
+            }); 
+        }
     });
 
     
