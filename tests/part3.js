@@ -1,47 +1,69 @@
 const app = require('../src/server');
 const req = require('supertest');
 
-describe('POST /message/', ()=>{
-    it('Responds with an unsuccessfull message creation, as the chat id was not sent', done =>{
+describe('POST /likeChange/', ()=>{
+    it('Responds with an unsuccessfull like change, as the tweet id was not sent', done =>{
         const body = {};
         req(app)
-            .post('/message/')
+            .post('/likeChange/')
             .send(body)
             .expect('Content-Type', /json/)
-            .expect({"errorMsg" : "No Chat Id sent in the request" , status: 500}, done);
+            .expect({"errorMsg" : "No Tweet Id sent in the request" , status: 500}, done);
     });
-    it('Responds with an unsuccessfull message creation, as the sender id was not sent', done =>{
+    it('Responds with an unsuccessfull like change, as the sender id was not sent', done =>{
         const body = {
-            "chatId": "aaaaaaa",
+            "tweetId": "aaaaaaa",
         };
         req(app)
-            .post('/message/')
+            .post('/likeChange/')
             .send(body)
             .expect('Content-Type', /json/)
             .expect({"errorMsg" : "No Sender Id sent in the request" , status: 500}, done);
     });
-    it('Responds with an unsuccessfull message creation, as the message was not sent', done =>{
+    it('Responds with an unsuccessfull like change, as the tweet does not exist', done =>{
         const body = {
-            "chatId": "aaaaaaa",
+            "tweetId": "aaaaaaa",
             "senderId": "bbbbbbbb",
         };
         req(app)
-            .post('/message/')
+            .post('/likeChange/')
             .send(body)
             .expect('Content-Type', /json/)
-            .expect({"errorMsg" : "No Message sent in the request" , status: 500}, done);
+            .expect({"errorMsg" : "The tweet could not be found" , status: 404}, done);
     });
-    it('Responds with an unsuccessfull message creation, as the chat does not exists', done =>{
-        const body = {
-            "chatId": "aaaaaaa",
-            "senderId": "bbbbbbbb",
-            "message" : "wrong id"
-        };
+   
+});
+
+
+describe('POST /retweetChange/', ()=>{
+    it('Responds with an unsuccessfull RT change, as the tweet id was not sent', done =>{
+        const body = {};
         req(app)
-            .post('/message/')
+            .post('/retweetChange/')
             .send(body)
             .expect('Content-Type', /json/)
-            .expect({"errorMsg" : "The chat could not be found" , status: 404}, done);
+            .expect({"errorMsg" : "No Tweet Id sent in the request" , status: 500}, done);
+    });
+    it('Responds with an unsuccessfull RT change, as the sender id was not sent', done =>{
+        const body = {
+            "tweetId": "aaaaaaa",
+        };
+        req(app)
+            .post('/retweetChange/')
+            .send(body)
+            .expect('Content-Type', /json/)
+            .expect({"errorMsg" : "No Sender Id sent in the request" , status: 500}, done);
+    });
+    it('Responds with an unsuccessfull RT change, as the tweet does not exist', done =>{
+        const body = {
+            "tweetId": "aaaaaaa",
+            "senderId": "bbbbbbbb",
+        };
+        req(app)
+            .post('/retweetChange/')
+            .send(body)
+            .expect('Content-Type', /json/)
+            .expect({"errorMsg" : "The tweet could not be found" , status: 404}, done);
     });
    
 });

@@ -362,7 +362,7 @@ module.exports = (app) => {
                                         if (errorSaveUser) {
                                             res.status(500).json(errorSaveUser);
                                         } else {
-                                            res.status(200).json({"chat": tweet, "message": "RT/unRT Successfully submitted ", "status": 200});  
+                                            res.status(200).json({"chat": tweet, "message": "RT Successfully changed ", "status": 200});  
                                         }
                                     })
                                 }
